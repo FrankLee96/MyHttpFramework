@@ -2,6 +2,7 @@ package com.open.lee.myhttpframework;
 
 import android.util.Log;
 
+import com.open.lee.myhttpframework.cache.RequestCache;
 import com.open.lee.myhttpframework.httpstack.HttpStack;
 import com.open.lee.myhttpframework.httpstack.URLConnHttpStack;
 
@@ -27,6 +28,8 @@ public class RequestQueue {
 
     private HttpStack mHttpStack;
 
+    private RequestCache mCache = new RequestCache();
+
     public RequestQueue(HttpStack httpStack){
         mHttpStack = httpStack != null ? httpStack : new URLConnHttpStack();
     }
@@ -34,7 +37,7 @@ public class RequestQueue {
     private void startHttpExecutors(){
         mExecutors = new HttpExecutor[mExecutorNumber];
         for (int i = 0; i < mExecutorNumber; i++){
-            mExecutors[i] = new HttpExecutor(mRequestQueue, mHttpStack);
+            mExecutors[i] = new HttpExecutor(mRequestQueue, mHttpStack, mCache);
             mExecutors[i].start();
         }
     }
