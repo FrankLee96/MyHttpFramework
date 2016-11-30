@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.open.lee.myhttpframework.Request;
 import com.open.lee.myhttpframework.Response;
+import com.open.lee.myhttpframework.request.BigMultipartRequest;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -29,6 +30,7 @@ import java.util.Map;
  */
 
 public class URLConnHttpStack implements HttpStack{
+    String MULTIPART_FROM_DATA = "multipart/form-data";
 
     @Override
     public Response performRequest(Request<?> request) {
@@ -59,13 +61,19 @@ public class URLConnHttpStack implements HttpStack{
     }
 
     private void setRequestHeaders(HttpURLConnection connection, Request<?> request){
+        Log.d("test", request.getHeaders().size() + "");
         for (Map.Entry<String, String> entry : request.getHeaders().entrySet()){
             connection.addRequestProperty(entry.getKey(), entry.getValue());
+            Log.d("test", entry.getKey()  + ": " + entry.getValue());
         }
     }
 
     private void setRequestBodyParams(HttpURLConnection connection, Request<?> request)
     throws ProtocolException, IOException{
+        if(request instanceof BigMultipartRequest){
+            setBigRequestBodyParams(connection, (BigMultipartRequest)request);
+            return;
+        }
         Request.HttpMethod method = request.getHttpMethod();
         connection.setRequestMethod(method.toString());
         byte[] body = request.getBody();
@@ -76,8 +84,22 @@ public class URLConnHttpStack implements HttpStack{
             DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
             //隐含调用connect建立TCP连接
             dataOutputStream.write(body);
+            Log.d("test", new String(body));
             dataOutputStream.close();
         }
+    }
+
+    private void setBigRequestBodyParams(HttpURLConnection connection, BigMultipartRequest request)
+            throws ProtocolException, IOException{
+        Request.HttpMethod method = request.getHttpMethod();
+        //connection.setChunkedStreamingMode(20 * 4096);
+        connection.setRequestMethod(method.toString());
+        connection.setDoOutput(true);
+        connection.addRequestProperty(Request.HEADER_CONTENT_TYPE,
+                request.getBodyContentType());
+        DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+        request.writeBody(dataOutputStream);
+        dataOutputStream.close();
     }
 
     private Response fetchResponse(HttpURLConnection connection) throws IOException{
