@@ -35,20 +35,21 @@ public class MainActivity extends AppCompatActivity {
     private void initViews(){
         showTextView = (TextView) findViewById(R.id.text_show);
         connectButton = (Button) findViewById(R.id.button_connect);
-        final MultipartRequest request = new MultipartRequest("http://192.168.199.143:51416/Face/check/", new RequestCompleteListener<String>() {
+        final StringRequest request = new StringRequest(Request.HttpMethod.GET, "http://www.jianshu.com/p/45cb536be2f4",
+                new RequestCompleteListener<String>() {
             @Override
             public void onComplete(int stateCode, String response, String errMsg) {
                 showTextView.setText(response);
             }
         });
-        Map<String, String> map = request.getHeaders();
+        /*Map<String, String> map = request.getHeaders();
         map.put("connection", "keep-alive");
         map.put("Charset", "UTF-8");
         map.put("Content-Type", MULTIPART_FROM_DATA
                 + "; boundary=" + request.getMultiPartEntity().getBoundary());
         MultipartEntity entity = request.getMultiPartEntity();
         entity.addStringPart("test", "okok");
-        entity.addFilePart("face", new File("storage/emulated/0/face.jpg"));
+        entity.addFilePart("face", new File("storage/emulated/0/face.jpg"));*/
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

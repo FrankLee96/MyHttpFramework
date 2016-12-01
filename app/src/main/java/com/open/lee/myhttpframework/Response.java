@@ -6,28 +6,31 @@ import org.apache.http.StatusLine;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.util.EntityUtils;
 
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Lee on 2016/11/27.
  */
 
-public class Response extends BasicHttpResponse{
+public class Response {
 
-    public byte[] rawData = new byte[0];
+    private Map<String, String> mHeadersMap = new HashMap<>();
 
-    public Response(StatusLine statusLine) {
-        super(statusLine);
+    private int stateCode;
+    private String message;
+
+    private byte[] rawData = new byte[0];
+
+    public Response(int code, String reason) {
+        this.stateCode = code;
+        this.message = reason;
     }
 
-    public Response(ProtocolVersion ver, int code, String reason) {
-        super(ver, code, reason);
-    }
-
-    @Override
-    public void setEntity(HttpEntity entity) {
-        super.setEntity(entity);
-        rawData = entityToBytes(getEntity());
+    public void setRawDataDirectly(byte[] bytes) {
+        rawData = bytes;
     }
 
     public byte[] getRawData() {
@@ -35,20 +38,14 @@ public class Response extends BasicHttpResponse{
     }
 
     public int getStatusCode() {
-        return getStatusLine().getStatusCode();
+        return stateCode;
     }
 
     public String getMessage() {
-        return getStatusLine().getReasonPhrase();
+        return message;
     }
 
-    /** Reads the contents of HttpEntity into a byte[]. */
-    private byte[] entityToBytes(HttpEntity entity) {
-        try {
-            return EntityUtils.toByteArray(entity);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new byte[0];
+    public void addHeader(String key, String value){
+        mHeadersMap.put(key, value);
     }
 }

@@ -14,6 +14,7 @@ import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
+import org.apache.http.util.EntityUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -108,12 +109,9 @@ public class URLConnHttpStack implements HttpStack{
         if (responseCode == -1){
             throw new IOException("connection response code is -1!");
         }
-
-        StatusLine responseStatue = new BasicStatusLine(protocolVersion, connection.getResponseCode(),
-                connection.getResponseMessage());
-        Response response = new Response(responseStatue);
-        Log.d("test", "ResponseStatus: " + responseCode + "\n" + responseStatue);
-        response.setEntity(entityFromURLConnection(connection));
+        Response response = new Response(responseCode, connection.getResponseMessage());
+        Log.d("test", "ResponseStatus: " + responseCode + "\n" + connection.getResponseMessage());
+        response.setRawDataDirectly(EntityUtils.toByteArray(entityFromURLConnection(connection)));
         addHeadersToResponse(response, connection);
         return response;
     }
@@ -137,11 +135,10 @@ public class URLConnHttpStack implements HttpStack{
         return entity;
     }
 
-    private void addHeadersToResponse(BasicHttpResponse response, HttpURLConnection connection) {
+    private void addHeadersToResponse(Response response, HttpURLConnection connection) {
         for (Map.Entry<String, List<String>> header : connection.getHeaderFields().entrySet()) {
             if (header.getKey() != null) {
-                Header h = new BasicHeader(header.getKey(), header.getValue().get(0));
-                response.addHeader(h);
+                response.addHeader(header.getKey(), header.getValue().get(0));
             }
         }
     }

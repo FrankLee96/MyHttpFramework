@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.open.lee.myhttpframework.cache.RequestCache;
 import com.open.lee.myhttpframework.httpstack.HttpStack;
+import com.open.lee.myhttpframework.httpstack.OkHttpStack;
 import com.open.lee.myhttpframework.httpstack.URLConnHttpStack;
 
 import java.util.concurrent.BlockingQueue;
@@ -31,7 +32,7 @@ public class RequestQueue {
     private RequestCache mCache = new RequestCache();
 
     public RequestQueue(HttpStack httpStack){
-        mHttpStack = httpStack != null ? httpStack : new URLConnHttpStack();
+        mHttpStack = httpStack != null ? httpStack : new OkHttpStack();
     }
 
     private void startHttpExecutors(){

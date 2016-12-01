@@ -1,5 +1,6 @@
 package com.open.lee.myhttpframework;
 
+import com.open.lee.myhttpframework.httpstack.OkHttpStack;
 import com.open.lee.myhttpframework.httpstack.URLConnHttpStack;
 
 /**
@@ -9,7 +10,7 @@ import com.open.lee.myhttpframework.httpstack.URLConnHttpStack;
 public class HttpController {
 
     public static RequestQueue createNewRequestQueue() {
-        RequestQueue newQueue = new RequestQueue(new URLConnHttpStack());
+        RequestQueue newQueue = new RequestQueue(new OkHttpStack());
         newQueue.start();
         return newQueue;
     }
