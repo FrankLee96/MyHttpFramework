@@ -8,3 +8,6 @@
 加入了缓存的使用
 ### 1.2
 加入大文件上传支持（BigMultipartRequest），待测试
+### 1.3
+加入了使用OkHttp的网络执行栈OkHttpStack;  
+更改了Response的实现方式， 减少了对Client包的依赖（因为HttpClient已经被废弃）
